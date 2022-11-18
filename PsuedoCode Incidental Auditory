@@ -93,17 +93,19 @@ Instructions exposure phase -see word doc for verbiage - congrats on practise - 
  
  Exposure Phase
  
+ loop - blocks x = 5
+ 
  for x in blocks
      reset audio scene sample pool of 80
      rest tone sample pool
      
-     Loop - trials - i = 40
+     Loop - trials - i = 80
         display fixation cross 
             random sample without replacement audio scene - presentaiton allow number roll? <<<<<
             random tone pick 1 of 2 where 1 = FT and 2 = VT
                         if tone pick = FT
                             random present side 1 of 2 where 1 = Left and 2 = right
-                            data save new identifiers (might need to be. list) -> audio clip as FT + Tone side <- note:will need to access for other trials
+                            data save new identifiers (might need to be list) -> audio clip as FT + Tone side <- note:will need to access for other trials
                         else
                             random present side 1 of 2 where 1 = Left and 2 = right
                             random onset 1 of 3 where 1 = 2000ms, 2 = 1750ms, 3 = 1500ms 
