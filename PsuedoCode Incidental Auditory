@@ -1,0 +1,33 @@
+Implicit Auditory Association with Targeted Tones
+Alain ERP lab with Moscovitch contributing
+
+Goal - Reduce task time and simplify demands of exisitn paradigm while keeping difficulty
+Goal - Confirm implicit association formation between tone and auditory scene
+Goal - investiagte if tone as target produces recall for tone presentation side
+Goal - will additional lures provide enough data for analysis of errors
+Goal - begin exploration of auditory features as relating to memory performance
+
+Conditions - within participant study
+Conditions - common tone presentation - all tones 500 Hz, 500ms duration
+    Fixed Tone (FT) - onset and presentation side reamin constant for all exposure trials and test
+    Varied Tone (VT) - onset time and presentation side radnomly change for each exposure trial and test
+            
+
+Study Introduction page
+  Welcome landing page
+      text - Welcome messgae - see word doc
+  Consent if not already provided (check this<<<<<)
+  
+  Instructions - text - see words doc - press space bar as soon as detect tone - correct/incorrect indicator
+  
+  Codable Instruction Features
+        Key responses - Exposure Phase
+        Space Bar - RT task - press as fast a possible when detect tone
+        return - indicate ready to continue between exposure trials and before test
+        
+    Key Responses - Test phase
+        
+    Practise session
+  
+            
+            - across 4 exposures  each clip's tone retains the same onset time, frequency, and presentation side
