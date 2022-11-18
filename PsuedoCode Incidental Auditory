@@ -44,34 +44,79 @@ Codable Set Up Features
 
 Study Introduction page
   Welcome landing page
-      text - Welcome messgae - see word doc
+     ## text - Welcome messgae - see word doc - welcome and consent process
   Consent if not already provided (check this<<<<<)
   
-  Instructions - text - (see words doc for verbage) summary - press space bar as soon as detect tone - correct/incorrect indicator colour red/green
+  Instructions - text - (see words doc for verbage) ## instruction summary - press space bar as soon as detect tone - correct/incorrect indicator colour red/green
     
-Loop - instructions 
-    for x pages in instruction set
+Loop - instructions                 ## cycle through each instruction page or segment
+    instruction set = XX            ##define number of pages
+    for x pages in instruction set              
         display instruction text page 
         wait for response <return> to advance screen
-    return
+    return                          ## back to for statement
     
-    Confirmation - text - (see word doc for verbiage) - understand instruction and ready to continue press return or press shift to see instruction again
+    Confirmation - text - (see word doc for verbiage) - ## understand instruction and ready to continue press return or press shift to see instruction again
     
-    if understand instruction and ready to continue press return when ready to continue
+    if respone = return 
+            move to parctice loop                 ## understand instruction and ready to continue press return when ready to continue 
+    else 
+            repeat instructions
   
-Practise session - 5 practice questions preset with common stimuli and preset fixed / variable 
-
+## Practise session - 6 practice questions  order and conditions are preset with common stimuli and 50/50 fixed / variable  
     
- Loop - practise stimuli  
-            x = 6
+ Loop - practise stimuli  ## iterate through each practise trial
+        
+        x = 6 ##set number of practise stimuli
  
-    for x (scene stimuli in practice)
-        display - fixation cross - reamins until trial end
-        Audio - trigger scenes + 250 ms from fixation cross onset (2500 ms duration)
-        Audio -  trigger pure tone - onset time count from Audio scene initialize (or if needs from audio scene intialize add 250ms - if that no work first fiaxtion cross solo and rest trigger at end of trial)
+    for x               ## track scene stimuli
+        display - fixation cross ## visual - reamins until trial end
+        Audio - trigger scenes @ + 250 ms from fixation cross onset (2500 ms duration)
+        Audio -  trigger pure tone @ onset time count from Audio scene initialize (or if needs from audio scene intialize add 250ms - if that no work first fiaxtion cross solo and rest trigger at end of trial)
+    
+    Response - Space Bar                        ## Participant indicates detection
+    Respones Data Save -> time elapse ASO to spacebar ##save RT DV
+        
+        If spacebar > 100 ms Tone onset AND > 700 ms tone onset ##only space bar press between 400 & 700ms post TOS are correct
+               display green correct
+               data save -> correct ##save accuaracy DV
+        Else 
+               red incorrect
+               data save -> incorrect  ##save accuracy DV
+    Timed @ 3000ms post fixation cross onset    ## begin trial
+                
+                
+Exposure Phase Instructions -see word doc for verbiage - congrats on practise - ready to start task - same rules apply - return when ready start
+
+      Loop - instructions       ## confirm instructions apply
+            for x pages in instruction set
+            display instruction text page 
+            wait for response <return> to advance screen
+    return
+ 
+ Exposure Phase - first block ### sets which audio scene stimuli are FT or DT -> this might happen at the start of the experiment but putting it here for sanity
+     
+     Loop - trials - i = 80         ##as 40 clips are lures will need to mark those as such once FT and VT scenes are determined
+        display fixation cross 
+            random sample without replacement audio scene - presentation allow number roll? <<<<<
+            random tone pick 1 of 2 where 1 = FT and 2 = VT
+                        if tone pick = FT
+                            random present side 1 of 2 where 1 = Left and 2 = right
+                            data save to SFT list new stimuli identifiers variable (audio clip cond l or r) -> audio clip as FT + Tone side <- note:will need to access for other trials
+                            data save audio scene + tone side
+                        else
+                            random present side 1 of 2 where 1 = Left and 2 = right
+                            random onset 1 of 3 where 1 = 2000ms, 2 = 1750ms, 3 = 1500ms 
+                            data save new SVT list new identifier variable -> audio clip as VT 
+                            data save audio scene + onset + tone side >>> number the clips and save this kind of info or just make a list<<<
+    data save -> remaining audio clips mark LT ## identify these as lures for later test
+                            
+    Audio - scene + 250 ms from fixation cross onset (2500 ms duration)
+            if identifier variable = 1
+            Audio - trigger pure tone - onset time count from Audio scene initialize (or if needs from audio scene intialize add 250ms - if that no work first fiaxtion cross solo and rest trigger at end of trial)
     
     Response - Space Bar - Participant indicates detection
-    Respones Data Save -> time elapse ASO to spacebar
+    Respones Data Save -> RT time elapse ASO to spacebar
         
         If spacebar > 100 ms Tone onset AND <
                display green correct
@@ -81,36 +126,32 @@ Practise session - 5 practice questions preset with common stimuli and preset fi
                red incorrect
                data save -> incorrect
     Timed @ 3000ms post onset 
-                begin next loop
-                
-Instructions exposure phase -see word doc for verbiage - congrats on practise - ready to start task - same rules apply - return when ready start
-
-      Loop - instructions 
-            for x pages in instruction set
-            display instruction text page 
-            wait for response <return> to advance screen
-    return
- 
- Exposure Phase
- 
- loop - blocks x = 5
+                begin next trial 
+     
+            
+ Exposure Phase - remainder blocks -> uses existing scene/tone pairings  
+ loop - blocks x = 4
  
  for x in blocks
-     reset audio scene sample pool of 80
-     rest tone sample pool
-     
-     Loop - trials - i = 80
-        display fixation cross 
-            random sample without replacement audio scene - presentaiton allow number roll? <<<<<
-            random tone pick 1 of 2 where 1 = FT and 2 = VT
-                        if tone pick = FT
-                            random present side 1 of 2 where 1 = Left and 2 = right
-                            data save new identifiers (might need to be list) -> audio clip as FT + Tone side <- note:will need to access for other trials
-                        else
-                            random present side 1 of 2 where 1 = Left and 2 = right
-                            random onset 1 of 3 where 1 = 2000ms, 2 = 1750ms, 3 = 1500ms 
-                            data save new identifiers -> audio clip as VT + ONST >>> number the clips and save this kind of info or just make a list<<<
-                            
+       
+ Loop - trials - i = 80
+ 
+    display fixation cross
+            rst = random stimuli pick 1 of 2 where 1 = SFT and 2 = SVT (scene + tone type status)
+    
+            if rst = SFT
+                  random sample without replacement audio scene identifier from SFT list
+            else
+                  random sample without replacement audio scene identifier from SVT list
+                  
+    Audio - new scene + 250 ms from fixation cross onset (2500 ms duration)
+    Audio - trigger pure tone - onset time count from Audio scene initialize (or if needs from audio scene intialize add 250ms - if that no work first fiaxtion cross solo and rest trigger at end of trial)
+    
+                  
+                  random present side 1 of 2 where 1 = Left and 2 = right
+                  andom onset 1 of 3 where 1 = 2000ms, 2 = 1750ms, 3 = 1500ms 
+                  data save -> audio clip as VT + ONST + side 
+         display fixation cross                        
     Audio - new scene + 250 ms from fixation cross onset (2500 ms duration)
     Audio - trigger pure tone - onset time count from Audio scene initialize (or if needs from audio scene intialize add 250ms - if that no work first fiaxtion cross solo and rest trigger at end of trial)
     
@@ -125,9 +166,9 @@ Instructions exposure phase -see word doc for verbiage - congrats on practise - 
                red incorrect
                data save -> incorrect
     Timed @ 3000ms post onset 
-                begin next loop
-     
+                begin next trial
             
-                       
+     
+
             
           
