@@ -3,7 +3,7 @@ Alain ERP lab with Moscovitch contributing
 
 In person - Within study IV Fixed vs Varied tone 
             Behaviour measures
-            DV  Exposure - RT tone detection time exposure, 
+            DV  Exposure - RT tone detection time exposure | correct/incorrect accuracy
             DV test  - RT identification Old/New, Old/New accuracuy | Confidence Old/New | Confidence Accuracy
             DV Tes for Old response only - presentation side L/R accuracy | side at test match side at exposure accuracy
 
@@ -59,17 +59,73 @@ Loop - instructions
     
     if understand instruction and ready to continue press return when ready to continue
   
-Loop - Practise session
-  
-  
-        Key responses - Exposure Phase
-        Space Bar - RT task - press as fast a possible when detect tone
-        return - indicate ready to continue between exposure trials and before test
-        
-    Key Responses - Test phase
-        
-        
+Practise session - 5 practice questions preset with common stimuli and preset fixed / variable 
+
     
-  
+ Loop - practise stimuli  
+            x = 6
+ 
+    for x (scene stimuli in practice)
+        display - fixation cross - reamins until trial end
+        Audio - trigger scenes + 250 ms from fixation cross onset (2500 ms duration)
+        Audio -  trigger pure tone - onset time count from Audio scene initialize (or if needs from audio scene intialize add 250ms - if that no work first fiaxtion cross solo and rest trigger at end of trial)
+    
+    Response - Space Bar - Participant indicates detection
+    Respones Data Save -> time elapse ASO to spacebar
+        
+        If spacebar > 100 ms Tone onset AND <
+               display green correct
+               data save -> correct
+        Else if spacebar < tone onset time
+        Else if spacebar > 2600 ms post ASO
+               red incorrect
+               data save -> incorrect
+    Timed @ 3000ms post onset 
+                begin next loop
+                
+Instructions exposure phase -see word doc for verbiage - congrats on practise - ready to start task - same rules apply - return when ready start
+
+      Loop - instructions 
+            for x pages in instruction set
+            display instruction text page 
+            wait for response <return> to advance screen
+    return
+ 
+ Exposure Phase
+ 
+ for x in blocks
+     reset audio scene sample pool of 80
+     rest tone sample pool
+     
+     Loop - trials - i = 40
+        display fixation cross 
+            random sample without replacement audio scene - presentaiton allow number roll? <<<<<
+            random tone pick 1 of 2 where 1 = FT and 2 = VT
+                        if tone pick = FT
+                            random present side 1 of 2 where 1 = Left and 2 = right
+                            data save new identifiers (might need to be. list) -> audio clip as FT + Tone side <- note:will need to access for other trials
+                        else
+                            random present side 1 of 2 where 1 = Left and 2 = right
+                            random onset 1 of 3 where 1 = 2000ms, 2 = 1750ms, 3 = 1500ms 
+                            data save new identifiers -> audio clip as VT + ONST >>> number the clips and save this kind of info or just make a list<<<
+                            
+    Audio - new scene + 250 ms from fixation cross onset (2500 ms duration)
+    Audio - trigger pure tone - onset time count from Audio scene initialize (or if needs from audio scene intialize add 250ms - if that no work first fiaxtion cross solo and rest trigger at end of trial)
+    
+    Response - Space Bar - Participant indicates detection
+    Respones Data Save -> RT time elapse ASO to spacebar
+        
+        If spacebar > 100 ms Tone onset AND <
+               display green correct
+               data save -> correct
+        Else if spacebar < tone onset time
+        Else if spacebar > 2600 ms post ASO
+               red incorrect
+               data save -> incorrect
+    Timed @ 3000ms post onset 
+                begin next loop
+     
+            
+                       
             
           
