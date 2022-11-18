@@ -223,6 +223,171 @@ Loop - trials - i = 80         ##as 40 clips are lures will need to mark those a
                 begin next trial
             
      
-
-            
+                                                            >>>>>> Test Phase <<<<<<
+                                                            
+ 
+>>>>>>    Test Instructions <<<<<< - text - (see words doc for verbage) ## instruction summary - press space bar as soon as detect tone - correct/incorrect indicator colour red/green
+    
+Loop - test instructions                 ## cycle through each test instruction page or segment
+    instruction set = XX            ##define number of pages
+    for x pages in instruction set              
+        display instruction text page 
+        wait for response <return> to advance screen
+    return                          ## back to for statement
+    
+    Confirmation - text - (see word doc for verbiage) - ## understand instruction and ready to continue press return or press shift to see instruction again
+    
+    if respone = return 
+            move to parctice loop                 ## understand instruction and ready to continue press return when ready to continue 
+    else 
+            repeat instructions         
           
+
+>>>>>>      Test block loop    <<<<<<
+
+
+
+t = 120
+
+for t
+
+  display fixation cross
+
+      rst = random stimuli pick 1 to 3 where 1 = FT, 2 = VT, 3 = LT                   ###randomly chose scene condition
+     
+                                                >>>>>>  Selecct test stimuli section    <<<<<<
+                                                                                                
+                                                   
+            if rst = 1 (FT)
+                  random sample without replacement audio scene identifier from FT list
+                        Audio - scene + 250 ms from fixation cross onset
+                                if TSP (tone side) = Left
+                                    audio trigger L pure tone @ +2000ms from scene onset
+                                else 
+                                    audio trigger R pure tone @ +2000ms from scene onset
+            elseif
+                  rst = 2 (VT)
+                  random sample without replacement audio scene identifier from VT list         ##recall this condition continues to use random features
+                        Audio - new scene + 250 ms from fixation cross onset (2500 ms duration)
+                                    
+                            random present side 1 of 2 where 1 = Left and 2 = right
+                            random onset 1 of 3 where 1 = 2000ms, 2 = 1750ms, 3 = 1500ms 
+                            data save new SVT list new identifier variable -> audio clip as VT 
+                            data save audio scene + onset + tone side
+                            
+                                    if TSP varaible = L and ROT = 1                                   ##dealing with varaible tone
+                                                audio trigger pure tone L @ 2000 ms post scene onset  
+                                    elseif TSP variable = L and ROT = 2
+                                                audio trigger pure tone L @ 1750ms post scene onset
+                                    elseif TSP variable = L and ROT = 3
+                                                audio trigger pure tone R @ 1500 ms post scene onset  
+                                    elseif TSP varaible = R and ROT = 1
+                                                audio trigger pure tone L @ 2000 ms post scene onset  
+                                    elseif TSP variable = R and ROT = 2
+                                                audio trigger pure tone L @ 1750ms post scene onset
+                                    elseif TSP variable = R and ROT = 3
+                                                Audio trigger pure tone L @ 1500 ms post scene onset 
+           elseif 
+                  rst = 3 (LT)
+                  random sample without replacement audio scene identifier from LT list         ##Lures also to use random features
+                        Audio - new scene + 250 ms from fixation cross onset (2500 ms duration)
+                                    
+                            random present side 1 of 2 where 1 = Left and 2 = right
+                            random onset 1 of 3 where 1 = 2000ms, 2 = 1750ms, 3 = 1500ms 
+                            data save new SVT list new identifier variable -> audio clip as VT 
+                            data save audio scene + onset + tone side
+                            
+                                    if TSP varaible = L and ROT = 1                                   ##dealing with varaible tone
+                                                audio trigger pure tone L @ 2000 ms post scene onset  
+                                    elseif TSP variable = L and ROT = 2
+                                                audio trigger pure tone L @ 1750ms post scene onset
+                                    elseif TSP variable = L and ROT = 3
+                                                audio trigger pure tone R @ 1500 ms post scene onset  
+                                    elseif TSP varaible = R and ROT = 1
+                                                audio trigger pure tone L @ 2000 ms post scene onset  
+                                    elseif TSP variable = R and ROT = 2
+                                                audio trigger pure tone L @ 1750ms post scene onset
+                                    elseif TSP variable = R and ROT = 3
+                                                Audio trigger pure tone L @ 1500 ms post scene onset                               
+                                                
+                                 
+    
+  data save -> FT or VT or LT + audio clip +  ONST + side 
+     
+                        >>>>>  Response Loop            ## Participant indicates audio scene recognition
+  
+  Response -> participant chooses "<" or ">"
+  
+  Response data save -> key press
+  Respones Data Save -> RT test     ### from scene onset to keypress
+  
+                                    >>>>>> determine if response is correct for data save and determin if move on to old questions <<<<<<<
+  
+  
+       if condition does not equal LT AND response = < OR if condition = LT AND response = >  ##correct and incorrect feedback & data save
+                    data save -> correct
+            Else
+                    data save -> incorrect
+                    
+      if response = old 
+            move on to old questions
+       else
+            continute loop        
+               
+                        >>>>>> Old Quesitons <<<<<    
+ 
+ likert confidence                     text -> you indicated you heard this clip before - please choose one of the following options
+                                    you recall the clip (have specific memory of the clip)
+                                    you recognize the clip (think you heard it before)
+                                    you guessed 
+                                    
+                                    OR
+                                    
+                                    How confident are you that you heard the clip before
+                                    not at all  kind of      think i did       know I did
+ 
+ 
+  Respones Data Save -> participant rating
+  
+  Tone presentation side
+                                    During the tone detection task on what side was the tone preented to you L "<" or  R ">"
+                                    
+  data save -> keypress
+                                    
+           if TPS = response
+                        data save -> correct
+               else 
+                        data save -> incorrect
+                        
+                                                            How confident are you in your answer? -> maybe rating scale? On a scale of 1 - 4?
+                                                not at all  somewhat      think i did       fully
+               data save -> response
+                                                
+ 
+ 
+ Confirm for the exposure
+ 
+                                    Was the tone on the same side for both tone detection task and clip recognition tasks? "<" Yes ">" NO
+                                                                        
+                                    
+                                    
+  
+        
+        If spacebar > 100 ms tone onset AND < 700 ms post tone onset
+               display green correct
+               data save -> correct
+        Else if spacebar < tone onset time
+        Else if spacebar > 2500 ms post ASO
+               red incorrect
+               data save -> incorrect
+               
+               
+                                                >>>>>>  test confidence  section    <<<<<<               
+
+
+
+
+
+    Timed @ 3000ms post onset 
+                begin next trial
+
