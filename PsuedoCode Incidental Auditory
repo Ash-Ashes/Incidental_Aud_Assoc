@@ -18,6 +18,10 @@ Conditions - common pure tone presentation features - all pure tones 500 Hz, 500
     Fixed Tone (FT) - onset and presentation side reamin constant for all exposure trials and test
     Varied Tone (VT) - onset time and presentation side radnomly change for each exposure trial and test
             
+General Note -> scenes in presentation
+might use these for the main sections -> instrucitons | Practise + Exposure blocks | Recognition Test
+
+
 Codable Set Up Features
         Key responses (max 6 allowable - 4 used) - request dominant hand use for later EEG transiiton
         
@@ -40,7 +44,9 @@ Codable Set Up Features
         "<" - Left side 
         ">" - Right side
         
->>>>    Instruction Consent & Practice Segment
+>>>>>>    Instruction Consent & Practice Segment            <<<<<<
+
+                                                >>>>>>      Instructions            <<<<<<
 
 Study Introduction page
   Welcome landing page
@@ -63,7 +69,9 @@ Loop - instructions                 ## cycle through each instruction page or se
     else 
             repeat instructions
   
-## Practise session - 6 practice questions  order and conditions are preset with common stimuli and 50/50 fixed / variable  
+                                                >>>>>> Practise <<<<<<
+
+>>>>>> ## Practise session - 6 practice questions  order and conditions are preset with common stimuli and 50/50 fixed / variable  <<<<<<
     
  Loop - practise stimuli  ## iterate through each practise trial
         
@@ -84,9 +92,12 @@ Loop - instructions                 ## cycle through each instruction page or se
                red incorrect
                data save -> incorrect  ##save accuracy DV
     Timed @ 3000ms post fixation cross onset    ## begin trial
+    
+    
+                                                >>>>>>      Exposure Phase - RT detect task  First Block Set up    <<<<<<
                 
                 
-Exposure Phase Instructions -see word doc for verbiage - congrats on practise - ready to start task - same rules apply - return when ready start
+>>>>>>      Exposure Phase Instructions -see word doc for verbiage - congrats on practise - ready to start task - same rules apply - return when ready start
 
       Loop - instructions       ## confirm instructions apply
             for x pages in instruction set
@@ -96,69 +107,112 @@ Exposure Phase Instructions -see word doc for verbiage - congrats on practise - 
  
  Exposure Phase - first block ### sets which audio scene stimuli are FT or DT -> this might happen at the start of the experiment but putting it here for sanity
      
-     Loop - trials - i = 80         ##as 40 clips are lures will need to mark those as such once FT and VT scenes are determined
-        display fixation cross 
-            random sample without replacement audio scene - presentation allow number roll? <<<<<
-            random tone pick 1 of 2 where 1 = FT and 2 = VT
-                        if tone pick = FT
-                            random present side 1 of 2 where 1 = Left and 2 = right
-                            data save to SFT list new stimuli identifiers variable (audio clip cond l or r) -> audio clip as FT + Tone side <- note:will need to access for other trials
-                            data save audio scene + tone side
-                        else
-                            random present side 1 of 2 where 1 = Left and 2 = right
-                            random onset 1 of 3 where 1 = 2000ms, 2 = 1750ms, 3 = 1500ms 
-                            data save new SVT list new identifier variable -> audio clip as VT 
-                            data save audio scene + onset + tone side >>> number the clips and save this kind of info or just make a list<<<
-    data save -> remaining audio clips mark LT ## identify these as lures for later test
-                            
-    Audio - scene + 250 ms from fixation cross onset (2500 ms duration)
-            if identifier variable = 1
-            Audio - trigger pure tone - onset time count from Audio scene initialize (or if needs from audio scene intialize add 250ms - if that no work first fiaxtion cross solo and rest trigger at end of trial)
+Loop - trials - i = 80         ##as 40 clips are lures will need to mark those as such once FT and VT scenes are determined (see data save below)
+    display fixation cross 
+            
+            random sample without replacement audio scene               ### presentation allow number roll? <<<< ## pick scene 
+            
+    Audio - begin scene + 250 ms from fixation cross onset (2500 ms duration)          ## add audio scene to fixaton cross
     
-    Response - Space Bar - Participant indicates detection
+            random tone pick 1 of 2 where 1 = FT and 2 = VT             ##assign scenes as FT or VT and save condiitons for later 
+                        if tone pick = FT
+                            random TSP variable present side 1 of 2 where 1 = Left and 2 = right             ##assign tone present side
+                            data save to SFT list new stimuli identifiers variable (tone l or r) ## audio clip as FT + Tone side <- note:will need to access for other trials
+                            data save audio scene + tone side           ## save trial stimuli information
+                        else
+                            random present side 1 of 2 where 1 = Left and 2 = right             ##assign tone present side
+                            random onset time (ROT) variable 1 of 3 where 1 = 2000ms, 2 = 1750ms, 3 = 1500ms        ##assign tone onset time
+                            data save new SVT list new identifier variable -> audio clip as VT  ##new variable to identify clip as VT 
+                            data save audio scene + onset + tone side               ##save trial information
+                                                            >>> number the clips and save this kind of info or just make a list<<<
+    data save -> remaining audio clips mark LT ## identify these as lures for later test >>> may need another loop
+                            
+  ###add tone according to conditions determined 
+  
+           if tone pick varaible = FT          ## dealing with fixed tone - only presentation side changes here
+                        
+                  if
+                    TSP variable = L
+                       Audio trigger pure tone L @ 2000 ms post scene onset ## preset onset time 2000 ms -> count from Audio scene initialize (or if needs from audio scene intialize add 250ms - if that no work first fiaxtion cross solo and rest trigger at end of trial)
+                  else
+                       Audio trigger pure tone R @ 2000 ms post scene onset           
+           Else
+                  if TSP varaible = L and ROT = 1                                   ##dealing with varaible tone
+                       audio trigger pure tone L @ 2000 ms post scene onset  
+                  elseif TSP variable = L and ROT = 2
+                       audio trigger pure tone L @ 1750ms post scene onset
+                  elseif TSP variable = L and ROT = 3
+                        Audio trigger pure tone R @ 1500 ms post scene onset  
+                  elseif TSP varaible = R and ROT = 1
+                       audio trigger pure tone L @ 2000 ms post scene onset  
+                  elseif TSP variable = R and ROT = 2
+                       audio trigger pure tone L @ 1750ms post scene onset
+                  elseif TSP variable = R and ROT = 3
+                        Audio trigger pure tone L @ 1500 ms post scene onset 
+ 
+                        
+    Response - Space Bar            ### Participant indicates tone detection
     Respones Data Save -> RT time elapse ASO to spacebar
         
-        If spacebar > 100 ms Tone onset AND <
+        If spacebar RT > 100 ms Tone onset AND <
                display green correct
                data save -> correct
-        Else if spacebar < tone onset time
-        Else if spacebar > 2600 ms post ASO
+        Else if spacebar  RT < tone onset time
+        Else if spacebar RT > 2600 ms post ASO
                red incorrect
                data save -> incorrect
-    Timed @ 3000ms post onset 
-                begin next trial 
+    Timed @ 3000ms post trial onset                 ###begin next trial 
+    
+    
+                                               >>>>>> Exposure blocks 2 through the rest <<<<<<<<
      
             
  Exposure Phase - remainder blocks -> uses existing scene/tone pairings  
- loop - blocks x = 4
  
- for x in blocks
+ loop - blocks x = 4                ##loop through the remianaing blocks
+ 
+ for i in blocks
        
  Loop - trials - i = 80
  
     display fixation cross
-            rst = random stimuli pick 1 of 2 where 1 = SFT and 2 = SVT (scene + tone type status)
+            rst = random stimuli pick 1 of 2 where 1 = FT and 2 = VT (scene + tone type status)
     
-            if rst = SFT
-                  random sample without replacement audio scene identifier from SFT list
+            if rst = 1 (FT)
+                  random sample without replacement audio scene identifier from FT list
+                        Audio - scene + 250 ms from fixation cross onset
+                                if TSP (tone side) = Left
+                                    audio trigger L pure tone @ +2000ms from scene onset
+                                else 
+                                    audio trigger R pure tone @ +2000ms from scene onset
             else
-                  random sample without replacement audio scene identifier from SVT list
-                  
-    Audio - new scene + 250 ms from fixation cross onset (2500 ms duration)
-    Audio - trigger pure tone - onset time count from Audio scene initialize (or if needs from audio scene intialize add 250ms - if that no work first fiaxtion cross solo and rest trigger at end of trial)
+                  random sample without replacement audio scene identifier from VT list         ##recall this condition continues to use random features
+                        Audio - new scene + 250 ms from fixation cross onset (2500 ms duration)
+                                    
+                            random present side 1 of 2 where 1 = Left and 2 = right
+                            random onset 1 of 3 where 1 = 2000ms, 2 = 1750ms, 3 = 1500ms 
+                            data save new SVT list new identifier variable -> audio clip as VT 
+                            data save audio scene + onset + tone side
+                            
+                                    if TSP varaible = L and ROT = 1                                   ##dealing with varaible tone
+                                                audio trigger pure tone L @ 2000 ms post scene onset  
+                                    elseif TSP variable = L and ROT = 2
+                                                audio trigger pure tone L @ 1750ms post scene onset
+                                    elseif TSP variable = L and ROT = 3
+                                                audio trigger pure tone R @ 1500 ms post scene onset  
+                                    elseif TSP varaible = R and ROT = 1
+                                                audio trigger pure tone L @ 2000 ms post scene onset  
+                                    elseif TSP variable = R and ROT = 2
+                                                audio trigger pure tone L @ 1750ms post scene onset
+                                    elseif TSP variable = R and ROT = 3
+                                                Audio trigger pure tone L @ 1500 ms post scene onset 
     
-                  
-                  random present side 1 of 2 where 1 = Left and 2 = right
-                  andom onset 1 of 3 where 1 = 2000ms, 2 = 1750ms, 3 = 1500ms 
-                  data save -> audio clip as VT + ONST + side 
-         display fixation cross                        
-    Audio - new scene + 250 ms from fixation cross onset (2500 ms duration)
-    Audio - trigger pure tone - onset time count from Audio scene initialize (or if needs from audio scene intialize add 250ms - if that no work first fiaxtion cross solo and rest trigger at end of trial)
-    
-    Response - Space Bar - Participant indicates detection
-    Respones Data Save -> RT time elapse ASO to spacebar
+  data save -> FT or VT + audio clip +  ONST + side 
+     
+  Response - Space Bar              ## Participant indicates detection
+  Respones Data Save -> RT time elapse TSO to spacebar
         
-        If spacebar > 100 ms Tone onset AND <
+        If spacebar > 100 ms tone onset AND < 700 ms post tone onset
                display green correct
                data save -> correct
         Else if spacebar < tone onset time
