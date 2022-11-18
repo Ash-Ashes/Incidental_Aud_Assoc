@@ -368,26 +368,25 @@ for t
  Confirm for the exposure
  
                                     Was the tone on the same side for both tone detection task and clip recognition tasks? "<" Yes ">" NO
+                                    
+           data save -> keypress
+                                    
+          if FT and response = <
+                   data save -> correct
+          else if VT OR LT
+                   data save correct
+          else
+                   data save incorrect
+                   
+  Confirm this loops back to next stimuli
+                     
                                                                         
-                                    
-                                    
-  
-        
-        If spacebar > 100 ms tone onset AND < 700 ms post tone onset
-               display green correct
-               data save -> correct
-        Else if spacebar < tone onset time
-        Else if spacebar > 2500 ms post ASO
-               red incorrect
-               data save -> incorrect
+ 
                
                
-                                                >>>>>>  test confidence  section    <<<<<<               
+                                                >>>>>>  thank you and debrief  section    <<<<<<               
 
 
 
 
-
-    Timed @ 3000ms post onset 
-                begin next trial
 
