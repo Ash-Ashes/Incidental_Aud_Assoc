@@ -1,6 +1,12 @@
 Implicit Auditory Association with Targeted Tones
 Alain ERP lab with Moscovitch contributing
 
+In person - Within study IV Fixed vs Varied tone 
+            Behaviour measures
+            DV  Exposure - RT tone detection time exposure, 
+            DV test  - RT identification Old/New, Old/New accuracuy | Confidence Old/New | Confidence Accuracy
+            DV Tes for Old response only - presentation side L/R accuracy | side at test match side at exposure accuracy
+
 Goal - Reduce task time and simplify demands of exisitn paradigm while keeping difficulty
 Goal - Confirm implicit association formation between tone and auditory scene
 Goal - investiagte if tone as target produces recall for tone presentation side
@@ -8,26 +14,62 @@ Goal - will additional lures provide enough data for analysis of errors
 Goal - begin exploration of auditory features as relating to memory performance
 
 Conditions - within participant study
-Conditions - common tone presentation - all tones 500 Hz, 500ms duration
+Conditions - common pure tone presentation features - all pure tones 500 Hz, 500ms duration
     Fixed Tone (FT) - onset and presentation side reamin constant for all exposure trials and test
     Varied Tone (VT) - onset time and presentation side radnomly change for each exposure trial and test
             
+Codable Set Up Features
+        Key responses (max 6 allowable - 4 used) - request dominant hand use for later EEG transiiton
+        
+        Common Keys
+        Escape - end experiment -confirm not part of key count <<<<<<
+        return - indicate ready to continue after instructions between exposure trials and before test - data elapsed time between end one block and start next
+        shift - repeat instruction page
+        
+        Key Responses Exposure Phase
+        Space Bar - RT task - press as fast a possible when detect tone - data RT from scene onset time
+        return - data duration time between end one block and start next
+        
+        Key Responses - Test phase old/new (implications for later EEG)
+        "<"  - Press as soon as you recognize the audio clip 
+        ">"  - Press as soon as you know you do not recognize
+        
+        Confidence Questions - radio buttons - likert - 4 or 6 points to prevent fence sitting <<<<<confirm presentation does this
+        
+        Key Responses - Test phase - Tone lateralization
+        "<" - Left side 
+        ">" - Right side
+        
+>>>>    Instruction Consent & Practice Segment
 
 Study Introduction page
   Welcome landing page
       text - Welcome messgae - see word doc
   Consent if not already provided (check this<<<<<)
   
-  Instructions - text - see words doc - press space bar as soon as detect tone - correct/incorrect indicator
+  Instructions - text - (see words doc for verbage) summary - press space bar as soon as detect tone - correct/incorrect indicator colour red/green
+    
+Loop - instructions 
+    for x pages in instruction set
+        display instruction text page 
+        wait for response <return> to advance screen
+    return
+    
+    Confirmation - text - (see word doc for verbiage) - understand instruction and ready to continue press return or press shift to see instruction again
+    
+    if understand instruction and ready to continue press return when ready to continue
   
-  Codable Instruction Features
+Loop - Practise session
+  
+  
         Key responses - Exposure Phase
         Space Bar - RT task - press as fast a possible when detect tone
         return - indicate ready to continue between exposure trials and before test
         
     Key Responses - Test phase
         
-    Practise session
+        
+    
   
             
-            - across 4 exposures  each clip's tone retains the same onset time, frequency, and presentation side
+          
