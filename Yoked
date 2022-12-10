@@ -1,0 +1,56 @@
+no_logfile = true;
+default_font_size = 36;
+
+begin;
+
+#Create first stimulus array
+array {
+	text { caption = "1"; description = "1"; } stim1;
+	text { caption = "2"; description = "2"; };
+	text { caption = "3"; description = "3"; };
+	text { caption = "4"; description = "4"; };
+	text { caption = "5"; description = "5"; };
+} numbers;
+
+#Create second stimulus array
+array {
+	text { caption = "A"; description = "A"; } stima;
+	text { caption = "B"; description = "B"; };
+	text { caption = "C"; description = "C"; };
+	text { caption = "D"; description = "D"; };
+	text { caption = "E"; description = "E"; };
+} letters;
+
+#Create a single trial that will be "reused" by changing the picture parts in main_pic
+trial {
+	trial_duration = 1500;
+	
+	stimulus_event {
+		picture {
+			text stim1;
+			x = 0; y = 100;
+			text stima;
+			x = 0; y = -100;
+		} main_pic;
+		duration = 1000;
+	} main_event;
+} main_trial;
+
+begin_pcl;
+
+
+#Shuffle the arrays of stimuli
+numbers.shuffle();
+letters.shuffle();
+#Set the picture parts in turn in the loop
+loop int i = 1 until i > numbers.count() || i > letters.count()
+begin
+	main_pic.set_part( 1, numbers[i] );
+	main_pic.set_part( 2, letters[i] );
+	main_event.set_event_code( numbers[i].description() + ";" + letters[i].description() );
+	main_trial.present();
+	i = i + 1;
+end;
+
+
+	
