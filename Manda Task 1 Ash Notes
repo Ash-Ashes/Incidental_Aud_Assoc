@@ -1,0 +1,604 @@
+response_matching = simple_matching;
+default_font_size = 48;
+no_logfile = false;
+response_logging = log_all;
+$BLACK = "0,0,0";
+response_port_output = true;
+event_code_delimiter=";";
+
+active_buttons = 6;
+button_codes = 1,2,3,4,5,6;
+default_path = "C:\\Users\\Aisling Sampson\\Documents\\Education\\UofT\\Tutorial Presses\\TuT_Uno\\";
+write_codes = false; # True only for MEG/EEG
+
+#PORT CODES
+#target location left = 1; right = 2; neutral = 3; >>>> You can lose the neutral here
+#add 8 at the end if it is scene onset & 9 at the end if it is tone onset >>>> think about using scene onset for everything response timing wise
+
+###################################################### SDL SETUP ##############################################################
+
+begin;
+
+box { height = 1; width = 1; color = 0,0,0; } blank;
+box {color = 0,0,0; height = 500; width = 660;} FeedbackBox;
+
+
+##>>>> below define the scene and the tone and name the objects for later recall<<<<<<<
+wavefile {filename = "StimuliComplete(FallTime, Cut, RMSequated)_NEW\\500hz_amplified_mf_atten.wav"; preload=false;} PureTone;
+wavefile {filename = "StimuliComplete(FallTime, Cut, RMSequated)_NEW\\RIVER.wav"; preload=false; } TheWave;
+sound {wavefile TheWave;} TheSound;
+sound {wavefile PureTone;} ThePureTone;
+
+
+#>>>> you will keep this countdown for the start of each trial block <<<<<
+picture { text {caption=" "; font_size = 250;} countdownText; x=0; y=40;} CountdownPic;
+
+
+##>>>> here are the naming sections for the fixation cross, they response pciture and the instruction text <<<<
+##>>>> here you need to change the "respond now" since you won't be using it the same way -> where is ready to start? <<<<<<
+text {height = 100; width=100; caption="+"; font_size =70; font_color = 255,255,255; background_color = 0,0,0;} Cross;
+text {height = 600; width=800; caption="Respond Now"; font_size =40; font_color = 255,255,255; background_color = 0,0,0;} RespondPicture;
+text {caption = " "; font_size = 20; font_color = 255,255,255; background_color = 0,0,0; max_text_width=1000; max_text_height=600; width=1024; height=610;} instructionText;
+
+picture{ background_color = $BLACK;} blackbackground;
+
+
+sound {wavefile TheWave; attenuation=1.0;}TheScene; ### Here is sound object -> for the scene you need no pan and most of the defaults apply <<<<<
+
+
+trial{
+	trial_duration = forever; #allows response event
+	trial_type = first_response; #response ends trial -> move on to the next instruction event
+	terminator_button = 1; ## you will change this
+	stimulus_event{
+		picture{
+			text instructionText; x=0; y=0;
+		} TheInstructions; ## find TheInstructions and update
+		code = "Instructions";
+	} InstructionEvent;
+} InstructionScene;
+
+
+#>>>> below is the interstimulus blank<<<<<	You will need to change the time here
+trial {
+	trial_duration = 1000;
+	stimulus_event{
+		picture blackbackground;
+		code="ITI";
+	} ITI;
+} ITItrial;
+
+trial{
+	trial_duration = 2500; #>>>> here you will change the trial type to end with a response to the feedback visual -> the scene will need to go on its own from the picture event <<<<<<<
+	picture {text Cross; x=0;y=0;};
+	stimulus_event{
+		sound TheScene ;
+		code = "Scene";
+	}SceneEvent;
+
+
+	##>>> Here the deltat is delta time -> how long after the scene the tone starts -> your randomizer needs to happen before -> there will be one for fixed and one for randomized
+	# Target here will need to be yoked to fixed (1) or random (2) conditions -> build fixed first then get your random stuff
+	stimulus_event{
+		sound ThePureTone;
+		deltat = 2000; #change to 1800 for fixed, randomized see the psuedo code for the times
+		code = "Target";
+	}TargetEvent;
+} Scene;
+
+
+##here the response is separated out -> you should be able to combine this with the above -> map out what needs to happen and match to response
+trial{
+	trial_duration = 3000;
+	trial_type = specific_response;
+	terminator_button = 3,4,5;
+	stimulus_event{
+		picture {text RespondPicture; x=0;y=0;};
+		code = "Response";
+	}ResponseEvent;
+} Response;
+
+trial{
+	trial_duration = 500;
+	stimulus_event{
+		picture {box FeedbackBox; x=0; y=0; box {color=0,0,0; height=480; width=640;}; x=0;y=0;} FeedbackPic;
+		code = "Feedback";
+	}FeedbackEvent;
+}Feedback;
+
+################################################# SUBS SETUP #################################################################
+
+begin_pcl;
+
+#>>>> Here is the input values to start the experiment -> participant number, signal attenuation, version (don't know you need version)
+preset string Participant;
+preset double SignalAttenuation;
+preset int Version; # Version 1 = Living on left, Manmade on right; Version 2 = Living on right, Manmade on left
+
+int NumOfTrials = 20; ##>>> why 20? ah yes shorter number of trials for the programming and testing <<<<
+
+##>>>??? have we confirmed primacy and recency at play here??
+##>>> lets figure out how these are arranged -> set up the array -> name the array -> [#of trials] -> [#of parameters I think] -> name the wave file -> attenuations to balance sound level I think? x2 -> onset time -> tone side -> tone type
+
+#To throw away and avoid primacy effect
+array<string> BufferArrayP [1] [6]= {{"B2_LIONSRAWRING.wav","-14.43","-14.43","1300","Right","High"}};
+#To throw away and avoid recency effect
+array<string> BufferArrayR [1] [6]= {{"BLACKSMITH.wav","-21.54","-21.63","1300","Left","Low"}};
+
+##>>>> now for the stimuli -> set up array -> name array -> [# of stimuli] -> are there 80? -> note they are alphabetical -> these will be indexed by the lists -> you need another way -> generate your own list? -> you will also put ALL of the sound forms in so you can yoke the test stimuli at the same time as the other stimuli
+##>>>> so yes after number of stimuli the next [# of parameters]
+##>>>> also do remove the parctice sounds from these stimuli - no repeating
+
+##>>>> the last number might be a duration -> if so you will want to change this -> check is not tone onset time -> onset time is part of the trial.
+##>>>> I think it is duration
+
+array<string> AllScenes[80][4] = {
+{"CONSTRUCTION.wav","-23.16","-23.52", "1900"},
+{"COOKING.wav","-27.00","-30.16", "1900"},
+{"COWSMOOING.wav","-16.36","-16.36", "1900"},
+{"DOGS.wav","-18.87","-18.87", "1900"},
+{"B2_SMALLROCKSFALLING.wav","-32.22","-30.19", "1900"},
+{"B2_BOXING.wav","-16.88","-15.38", "1900"},
+{"EMERGENCY.wav","-20.34","-18.17", "1900"},
+{"FACTORY.wav","-20.74 ","-19.89", "1900"},
+{"FIREBURNING.wav","-26.56","-26.42", "1900"},
+{"FROGPOND.wav","-32.19","-32.62", "1900"},
+{"GLASSBREAKING.wav","-46.77","-39.27", "1900"},
+{"HAIRDRYING.wav","-22.75","-21.34", "1900"},
+{"HIGHWAY.wav","-20.90","-20.15", "1900"},
+{"HORSES.wav","-25.14","-25.04", "1650"},
+{"LAUGHING.wav","-31.59","-29.93", "1650"},
+{"ALARMS.wav","-18.84","-18.63", "1900"},{
+"ANGRYMOB.wav","-20.67","-20.58", "1650"},
+{"APPLAUSE.wav","-22.16","-22.40", "1650"},
+{"ARCADES.wav","-19.90","-20.15", "1400"},
+{"BABIES.wav","-35.96","-38.11", "1650"},{
+"BALLDRUMMING.wav","-17.64","-16.59", "2150"},
+{"BASEKETBALLGAME.wav","-24.78","-25.70", "1900"},
+{"BEESANDINSECTS.wav","-21.74","-24.13", "1650"},
+{"BUBBLING.wav","-20.37","-17.81", "1650"},
+{"CATS.wav","-25.05","-25.04", "1650"},
+{"CHEERINGCROWD.wav","-20.19","-24.56", "1900"},
+{"CHICKEN.wav","-26.25","-35.09", "2150"},
+{"CHILDREN.wav","-19.99","-20.21", "1900"},
+{"CHIMES.wav","-25.65","-25.63", "2150"},
+{"CHURCH.wav","-23.72","-27.01", "1900"},
+{"CLASSROOM.wav","-26.81","-24.52", "1650"},
+{"B2_NOISYCHEWING.wav","-18.00","-18.10", "1900"},
+{"GEESE.wav","-26.64","-25.58","2150"},
+{"FIREWORKS.wav","-18.55","-19.88", "1400"},
+{"B2_MUSICBOXES.wav","-27.69","-28.57", "1650"},
+{"B2_SNAKES.wav","-27.36","-30.29", "1900"},
+{"B2_SNORING.wav","-26.19","-25.21", "2150"},
+{"B2_TYPING.wav","-21.03","-21.02", "1400"},
+{"B2_WHISPERINGVOICES.wav","-36.65","-33.38", "2150"},
+{"B2_BOWLING.wav","-16.68","-20.21", "1400"},
+{"SEAGULLS.wav","-23.99","-24.10", "2150"},{
+"SHEEP.wav","-24.31","-23.41", "1650"},
+{"SICK.wav","-25.34","-17.93", "1650"},
+{"STREETHOCKEY.wav","-31.92","-29.13", "1400"},
+{"SUMMERNIGHT.wav","-21.52","-21.47", "1650"},
+{"SUPERMARKET.wav","-22.79","-23.31", "1400"},
+{"TABLETENNIS.wav","-18.23","-17.36", "1400"},
+{"TOILET.wav","-23.56","-23.82", "1400"},
+{"TRAFFIC.wav","-27.69","-28.86", "1400"},
+{"TRAIN.wav","-22.02","-25.38", "1400"},
+{"TRIBALAFRICAN.wav","-23.1","-23.13", "1400"},
+{"UNDERWATER.wav","-24.67","-25.14", "1400"},
+{"WALKINGINWOODS.wav","-24.96","-24.96", "1650"},
+{"WARGUNSHOTS.wav","-21.57","-19.61", "1650"},
+{"WASHINGDISHES.wav","-42.15","-36.06", "1400"},
+{"WINDSHUTTERS.wav","-16.99","-19.85", "2150"},
+{"B2_CAROUSEL.wav","-22.27","-32.83", "2150"},
+{"B2_SANDPAPER.wav","-30.09","-30.09", "2150"},
+{"B2_ELECTRICITY.wav","-24.43","-24.38", "2150"},
+{"B2_PLANEOVERHEAD.wav","-19.85","-20.45", "1400"},
+{"LEAVES.wav","-29.19","-28.91", "2150"},
+{"LIGHTNING.wav","-24.05","-20.25", "2150"},
+{"MARCHINGBAND.wav","-18.12","-19.72", "2150"},
+{"MEDIEVALBATTLE.wav","-24.32","-24.31", "2150"},
+{"MONKEYSZOO.wav","-24.93","-24.93", "1650"},
+{"MONKSPRAYING.wav","-24.77","-24.25", "2150"},
+{"NOISYOFFICE.wav","-22.43","-21.68", "1400"},
+{"ORCHESTRATUNING.wav","-23.62","-24.59", "2150"},
+{"OWLS.wav","-19.46","-19.29", "1650"},
+{"PARADE.wav","-26.35","-24.36", "1400"},
+{"PEOPLETALKING.wav","-22.91","-22.95", "2150"},
+{"B2_RUNNINGDOWNSTAIRS.wav","-15.58","-17.93", "1650"},
+{"PRESSCONFERENCE.wav","-26.04","-29.85", "1400"},
+{"RAINING.wav","-24.64","-24.71", "1650"},
+{"RIVER.wav","-23.36","-23.96", "1650"},
+{"SCREAMING.wav","-24.19","-23.57", "2150"},
+{"B2_FLIPPINGBOOKPAGES.wav","-31.25","-31.25", "1400"},
+{"B2_FORESTWOODPECKER.wav","-23.42","-23.76", "2150"},
+{"B2_CHRISTMAS.wav","-20.08","-21.66", "1400"},
+{"B2_COINS.wav","-23.75","-23.75", "1400"}};
+#40 Neutral, 20 Left, 20 Right ##>>>>> 80 - 40 fixed and 40 varied for your version
+#v.2 now should subdivide left and right into {"Left", "Low"} (10) and {"Left", "High"} (10) etc. for "Right"
+#therefore array<string> TrialType[80] is now TrialType[80][2] to signal that there are 2 parts to each entry >>>> check this with yoking
+
+##>>>>>>> build array, name array - this is the second part for the tone. Here you need tone onset and side -> so 40 as {"Left" and 40 as "Right" this for yoking -> but really we want to yoke "Fixed" and "Varied" for an if then statement -> if that is so then the second value is [1] for only one parameter that is attached
+array<string> TrialType[80][2] = {{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"}};
+
+###>>> this stays the same I think<<<<<<<
+sub countdown(int Limit)
+begin
+		Limit = Limit + 1;
+		int clockTime = clock.time();
+		int startTime = clockTime;
+
+		int everySec = 1000;
+		string time;
+		int index = 1;
+
+		loop until clockTime>=(Limit*everySec+startTime) begin
+			clockTime = clock.time();
+			if (clockTime>(startTime+everySec*index)) then
+				time = string(Limit -index);
+				countdownText.set_caption(time);
+				countdownText.redraw();
+				index = index + 1;
+				CountdownPic.present();
+			end;
+		end;
+		countdownText.set_caption(" ");
+		countdownText.redraw();
+		CountdownPic.present();
+end;
+
+sub Wait(int TimeInSec)
+begin
+	int clockTime = clock.time();
+	int startTime = clockTime;
+	loop until clockTime >= ((TimeInSec*1000)+startTime) begin
+		clockTime = clock.time();
+	end;
+end;
+
+###>>>> subroutines here -> looks like int order is pulled from the lists -> int ver -> is pulled from the participant on board info -> string Freq is to determine hi med low -> this is your fixed vs random -> not sure what string array type is -> AH it is whether or not the stimuli is main the primacy or the recency trials -> this is adaptable
+
+sub InsertScene(int Order, int Ver, string Freq, string ArrayType)
+begin
+
+	# Inserting the scene >>>> direct to wavefiles
+	string soundfile = "StimuliComplete(FallTime, Cut, RMSequated)_NEW\\";
+
+	if ArrayType == "Main" then
+		soundfile = soundfile + AllScenes[Order][1];
+		#LvM = AllScenes[Order][4];
+	elseif ArrayType == "Prim" then
+		soundfile = soundfile + BufferArrayP[Order][1];
+		#LvM = BufferArrayP[Order][4];
+	elseif ArrayType == "Rec" then
+		soundfile = soundfile + BufferArrayR[Order][1];
+		#LvM = BufferArrayR[Order][4];
+	end;
+
+	##>>>> these are kinda the same for you -> note the pan and the attenuation is here
+	TheWave.set_filename(soundfile);
+	TheWave.load();
+	TheScene = new sound(TheWave);
+
+	TheScene.set_attenuation(0.1);
+	TheScene.set_pan(0.0);
+	TheScene.present();
+
+	###>>>so here you need to set your responses -> depending on too fast too slow -> peach and checkmark -> turquoise
+
+	# Setting the right response depending on low/high
+	#your if response =<
+	if Freq == "High" then
+		if Ver== 1 then
+			ResponseEvent.set_target_button(4);
+		elseif Ver ==2 then
+			ResponseEvent.set_target_button(3);
+		end
+	elseif Freq == "Low" then
+		if Ver== 1 then
+			ResponseEvent.set_target_button(3);
+		elseif Ver ==2 then
+			ResponseEvent.set_target_button(4);
+		end
+	elseif Freq == "None" then
+		ResponseEvent.set_target_button(5);
+	end
+end;
+
+
+# the structure of InsertPureTone needs to be changed to accept a third argument (basically whether the tone is hi/lo)
+# for me the structure of pure tone needs to reflect the fixed vs varied and the onset times
+# if yoke = varied and response time >= deltat + 500ms too slow, varied and response time <= deltat +100 ms too fast else check
+
+###>>>>ok here are your values for the pur tones -> you only have one freq, but this is how you get your responses
+sub InsertPureTone(string freq, double attenuate, double pan, int TargetToneOnset)
+begin
+	string soundfile = "StimuliComplete(FallTime, Cut, RMSequated)_NEW\\";
+	if freq == "Low" then
+		soundfile = soundfile + "500hz_amplified_mf_atten.wav";
+	elseif freq == "High" then
+		soundfile = soundfile + "1khz_atten_final_3.wav";
+	end;
+	PureTone.set_filename(soundfile);
+	PureTone.load();
+	ThePureTone.set_attenuation(attenuate);
+	ThePureTone.set_pan(pan);
+
+		string tempString = "Target_";
+	if pan == -1.0 then
+		tempString = tempString + "L";
+	elseif pan == 1.0 then
+		tempString = tempString + "R";
+	end;
+	TargetEvent.set_deltat(TargetToneOnset);
+	TargetEvent.set_event_code(tempString);
+end;
+
+################################################# TASK SHOWS UP HERE ##########################################################
+##>>>>>>>>>>>>>>>>>>> here is where you adjust your instructions -> you only need one version
+if Version == 1 then
+	instructionText.set_caption("Just as in the practice task, you will be hearing a set of auditory scenes. Your task is to press the spacebar as fast as you can as soon as you detect the tone. If you take too long you will see "too slow" and if you respond prematurely you will see "too fast"\n\n Again, please respond as quickly and as accurately as possible. \n\n When you are ready to begin, please press “TAB” .");
+elseif Version == 2 then
+	instructionText.set_caption("Just as in the practice task, you will be hearing a set of auditory clips. Your task is to indicate, to your best judgment, whether the tone is high or low.\n\nPress the 'left' arrow key if you think the tone is high.\nPress the 'right' arrow key if you think the tone is low.\nPress the 'down' arrow key if there is NO tone \n\n Again, please respond as quickly and as accurately as possible. \n\n When you are ready to begin, please press the “down” arrow key.");
+end;
+
+instructionText.redraw();
+InstructionScene.present();
+
+countdown(3);
+
+stimulus_data last;
+string FeedbackString = "";
+string theirResponse;
+string output = "TrialNumber\tFileName\tTrialType\tToneOnset\tFeedback\tSubject Response\tRT\tHigh v. Low\n";
+
+double PureToneVol =20.0;
+double Constant = 43.0;
+double PureToneConstant = 0.40;
+double NewPureTone = 0.0;
+double CurrentAtten = 0.0;
+double NoiseVolume = 0.0;
+string File = "Nothing";
+
+
+
+##here you will replay your yoke stuff
+# Feed in stim order pairs (text from matlab)
+input_file stim_order = new input_file;
+
+stim_order.open("Participants\\"+Participant+"\\neworder_list1.txt");
+
+#primacy loop
+loop int TrialPrim = 1 until TrialPrim > 1
+begin
+
+	int TargetToneOnset = int(BufferArrayP[TrialPrim][4]);
+
+	InsertScene(TrialPrim, Version, BufferArrayP[TrialPrim][6], "Prim");
+	string TargetLoc = BufferArrayP[TrialPrim][5];
+	if TargetLoc == "Left" then
+		NoiseVolume = double(BufferArrayP[TrialPrim][2]);  # Noise volume @ the left side
+		CurrentAtten = SignalAttenuation+ ((-23.0-NoiseVolume)/100.0);
+
+		if (CurrentAtten<0.0) then
+			CurrentAtten = 0.00022;
+		end;
+		File = BufferArrayP[TrialPrim][1];
+
+		InsertPureTone(BufferArrayP[TrialPrim][6],CurrentAtten,-1.0, TargetToneOnset);
+
+		SceneEvent.set_port_code(18);
+		TargetEvent.set_port_code(19);
+	elseif TargetLoc == "Right" then
+		NoiseVolume = double(BufferArrayP[TrialPrim][3]); # Noise volume @ the right side
+		CurrentAtten = SignalAttenuation + ((-23.0-NoiseVolume)/100.0);
+
+		if (CurrentAtten<0.0) then
+			CurrentAtten = 0.00022;
+		end;
+		File = BufferArrayP[TrialPrim][1];
+		InsertPureTone(BufferArrayP[TrialPrim][6],CurrentAtten,1.0, TargetToneOnset);
+
+		SceneEvent.set_port_code(28);
+		TargetEvent.set_port_code(29);
+	elseif TargetLoc == "Neutral" then
+		NoiseVolume = ((double(BufferArrayP[TrialPrim][2])+Constant) + (double(BufferArrayP[TrialPrim][3])+Constant))/2.0;
+		NewPureTone = 0.0;
+		CurrentAtten = 0.0;
+		File = BufferArrayP[TrialPrim][1];
+		InsertPureTone("Low",1.0,0.0, 0);
+
+		SceneEvent.set_port_code(38);
+		TargetEvent.set_port_code(39);
+	end;
+	Scene.present();
+	Response.present();
+
+	last = stimulus_manager.last_stimulus_data();
+	if last.type() == stimulus_incorrect then
+		FeedbackString = "Incorrect";
+		FeedbackBox.set_color(255,0,0);
+	elseif last.type() == stimulus_hit then
+		FeedbackString = "Correct";
+		FeedbackBox.set_color(0,255,0);
+	elseif ((last.type() != stimulus_hit) || (last.type() != stimulus_incorrect)) then
+		FeedbackString = "Too Slow";
+		FeedbackBox.set_color(0,0,255);
+	end;
+
+	theirResponse = "Miss";
+	if response_manager.last_response() == 3 then
+		theirResponse = "Left";
+	elseif response_manager.last_response() == 4 then
+		theirResponse = "Right";
+	elseif response_manager.last_response() == 5 then
+		theirResponse = "Down";
+	end;
+
+	string tempOutput = "P" + string(TrialPrim) +"\t" + File +"\t" + TargetLoc + "\t"+ string(TargetToneOnset) + "\t"+ FeedbackString + "\t"+ theirResponse + "\t" + string(last.reaction_time()) + "\t" + BufferArrayP[TrialPrim][6] + "\n";
+	term.print(tempOutput);
+	output = output + tempOutput;
+	Feedback.present();
+	TrialPrim = TrialPrim+1;
+
+end;
+
+loop int TrialNum = 1 until TrialNum > NumOfTrials
+begin
+
+	int TrialScene = int(stim_order.get_line());
+	int PlaceNum = int(stim_order.get_line());
+
+	InsertScene(TrialScene, Version, TrialType[PlaceNum][2], "Main");
+
+	int TargetToneOnset = int(AllScenes[PlaceNum][4]);
+
+	if TrialType[PlaceNum][1] == "Left" then # should now be TrialType[PlaceNum][1] to refer to spatialization
+		NoiseVolume = double(AllScenes[TrialScene][2]);  # Noise volume @ the left side
+		CurrentAtten = SignalAttenuation+ ((-23.0-NoiseVolume)/100.0);
+
+		if (CurrentAtten<0.0) then
+			CurrentAtten = 0.00022;
+		end;
+		File = AllScenes[TrialScene][1];
+		InsertPureTone(TrialType[PlaceNum][2],CurrentAtten,-1.0, TargetToneOnset);
+
+		SceneEvent.set_port_code(118);
+		TargetEvent.set_port_code(119);
+
+	elseif TrialType[PlaceNum][1] == "Right" then
+		NoiseVolume = double(AllScenes[TrialScene][3]); # Noise volume @ the right side
+		CurrentAtten = SignalAttenuation + ((-23.0-NoiseVolume)/100.0);
+
+		if (CurrentAtten<0.0) then
+			CurrentAtten = 0.00022;
+		end;
+		File = AllScenes[TrialScene][1];
+		InsertPureTone(TrialType[PlaceNum][2],CurrentAtten,1.0, TargetToneOnset);
+		SceneEvent.set_port_code(128);
+		TargetEvent.set_port_code(129);
+
+	elseif TrialType[PlaceNum][1] == "Neutral" then
+		NoiseVolume = ((double(AllScenes[TrialScene][2])+Constant) + (double(AllScenes[TrialScene][3])+Constant))/2.0;
+		NewPureTone = 0.0;
+		CurrentAtten = 0.0;
+		File = AllScenes[TrialScene][1];
+		InsertPureTone("Low",1.0,0.0, 0);
+		SceneEvent.set_port_code(208);
+		TargetEvent.set_port_code(209);
+	end;
+
+	Scene.present();
+	Response.present();
+
+	last = stimulus_manager.last_stimulus_data();
+	if last.type() == stimulus_incorrect then
+		FeedbackString = "Incorrect";
+		FeedbackBox.set_color(255,0,0);
+	elseif last.type() == stimulus_hit then
+		FeedbackString = "Correct";
+		FeedbackBox.set_color(0,255,0);
+	elseif ((last.type() != stimulus_hit) || (last.type() != stimulus_incorrect)) then
+		FeedbackString = "Too Slow";
+		FeedbackBox.set_color(0,0,255);
+	end;
+
+	theirResponse = "Miss";
+	if response_manager.last_response() == 3 then
+		theirResponse = "Left";
+	elseif response_manager.last_response() == 4 then
+		theirResponse = "Right";
+	elseif response_manager.last_response() == 5 then
+		theirResponse = "Down";
+	end;
+
+	string tempOutput = string(TrialNum) +"\t" + File + "\t" + TrialType[PlaceNum][1] + "\t"+ string(TargetToneOnset) + "\t"+ FeedbackString + "\t" + theirResponse + "\t" + string(last.reaction_time()) + "\t" + TrialType[PlaceNum][2] + "\n";
+	term.print(tempOutput);
+	output = output + tempOutput;
+	Feedback.present();
+	TrialNum = TrialNum+1;
+end;
+
+loop int TrialRec = 1 until TrialRec > 1
+begin
+
+	InsertScene(TrialRec, Version, BufferArrayR[TrialRec][6], "Prim");
+
+	int TargetToneOnset = int(BufferArrayR[TrialRec][4]);
+
+	string TargetLoc = BufferArrayR[TrialRec][5];
+	if TargetLoc == "Left" then
+		NoiseVolume = double(BufferArrayR[TrialRec][2]);  # Noise volume @ the left side
+		CurrentAtten = SignalAttenuation+ ((-23.0-NoiseVolume)/100.0);
+
+
+		if (CurrentAtten<0.0) then
+			CurrentAtten = 0.00022;
+		end;
+		File = BufferArrayR[TrialRec][1];
+		InsertPureTone(BufferArrayR[TrialRec][6],CurrentAtten,-1.0, TargetToneOnset);
+		SceneEvent.set_port_code(18);
+		TargetEvent.set_port_code(19);
+
+	elseif TargetLoc == "Right" then
+		NoiseVolume = double(BufferArrayR[TrialRec][3]); # Noise volume @ the right side
+		CurrentAtten = SignalAttenuation + ((-23.0-NoiseVolume)/100.0);
+
+		if (CurrentAtten<0.0) then
+			CurrentAtten = 0.00022;
+		end;
+		File = BufferArrayR[TrialRec][1];
+		InsertPureTone(BufferArrayR[TrialRec][6],CurrentAtten,1.0, TargetToneOnset);
+		SceneEvent.set_port_code(28);
+		TargetEvent.set_port_code(29);
+
+	elseif TargetLoc == "Neutral" then
+		NoiseVolume = ((double(BufferArrayR[TrialRec][2])+Constant) + (double(BufferArrayR[TrialRec][3])+Constant))/2.0;
+		NewPureTone = 0.0;
+		CurrentAtten = 0.0;
+		File = BufferArrayR[TrialRec][1];
+		InsertPureTone("Low",1.0,0.0, 0);
+		SceneEvent.set_port_code(38);
+		TargetEvent.set_port_code(39);
+	end;
+
+	Scene.present();
+	Response.present();
+
+	last = stimulus_manager.last_stimulus_data();
+	if last.type() == stimulus_incorrect then
+		FeedbackString = "Incorrect";
+		FeedbackBox.set_color(255,0,0);
+	elseif last.type() == stimulus_hit then
+		FeedbackString = "Correct";
+		FeedbackBox.set_color(0,255,0);
+	elseif ((last.type() != stimulus_hit) || (last.type() != stimulus_incorrect)) then
+		FeedbackString = "Too Slow";
+		FeedbackBox.set_color(0,0,255);
+	end;
+
+	theirResponse = "Miss";
+	if response_manager.last_response() == 3 then
+		theirResponse = "Left";
+	elseif response_manager.last_response() == 4 then
+		theirResponse = "Right";
+	elseif response_manager.last_response() == 5 then
+		theirResponse = "Down";
+	end;
+
+	string tempOutput = "R" + string(TrialRec) +"\t" + File + "\t" + TargetLoc + "\t"+ string(TargetToneOnset) + "\t"+ FeedbackString + "\t"+ theirResponse + "\t" + string(last.reaction_time()) + "\t" + BufferArrayR[TrialRec][6] + "\n";
+	term.print(tempOutput);
+	output = output + tempOutput;
+	TrialRec = TrialRec+1;
+
+end;
+
+string OutfileName = Participant + "_LearningTask1.txt";
+output_file TheFile = new output_file;
+TheFile.open(OutfileName,true);
+TheFile.print(output);
+TheFile.close();
+stim_order.close();
+
+instructionText.set_caption("You have finished the task! Please take a break before the next part of the experiment. Please press the down arrow key.");
+instructionText.redraw();
+InstructionScene.present();
