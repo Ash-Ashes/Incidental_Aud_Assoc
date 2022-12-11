@@ -15,6 +15,8 @@ write_codes = false; # True only for MEG/EEG
 #target location left = 1; right = 2; neutral = 3; 
 #add 8 at the end if it is scene onset & 9 at the end if it is tone onset
 
+##>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Above is set up  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 begin; 
 
 box { height = 1; width = 1; color = 0,0,0; } blank;
@@ -23,19 +25,20 @@ box {color = 0,0,0; height = 500; width = 660;} FeedbackBox;
 
 wavefile {filename = "StimuliComplete(FallTime, Cut, RMSequated)_NEW\\500hz_amplified_mf.wav"; preload=false;}PureTone;
 wavefile {filename = "StimuliComplete(FallTime, Cut, RMSequated)_NEW\\RIVER.wav"; preload=false; } TheWave;
-sound {wavefile TheWave;} TheSound;
-sound {wavefile PureTone;} ThePureTone; 
+sound {wavefile TheWave;} TheSound; #name the scene
+sound {wavefile PureTone;} ThePureTone;  #name the tone
 
-picture { text {caption=" "; font_size = 250;} countdownText; x=0; y=40;} CountdownPic;
+picture { text {caption=" "; font_size = 250;} countdownText; x=0; y=40;} CountdownPic; #countdown
 
-text {height = 100; width=100; caption="+"; font_size =70; font_color = 255,255,255; background_color = 0,0,0;} Cross;
-text {height = 600; width=800; caption="Respond Now"; font_size =40; font_color = 255,255,255; background_color = 0,0,0;} RespondPicture;
+text {height = 100; width=100; caption="+"; font_size =70; font_color = 255,255,255; background_color = 0,0,0;} Cross; #fixation cross set
+text {height = 600; width=800; caption="Respond Now"; font_size =40; font_color = 255,255,255; background_color = 0,0,0;} RespondPicture; #respond now - you won't need this
 text {caption = " "; font_size = 20; font_color = 255,255,255; background_color = 0,0,0; max_text_width=1000; max_text_height=600; width=1024; height=610;} instructionText; 
 
 picture{ background_color = $BLACK;} blackbackground;
 
-sound {wavefile TheWave; attenuation=1.0;}TheScene;
+sound {wavefile TheWave; attenuation=1.0;}TheScene;##assign the scene identifier to the wave file
 
+## instruction trial - one page - response ends with terminator button 1
 trial{
 	trial_duration = forever; 
 	trial_type = first_response;
@@ -48,6 +51,7 @@ trial{
 	} InstructionEvent; 
 } InstructionScene; 
 
+##inter trial interval
 trial {
 	trial_duration = 1000;
 	stimulus_event{
@@ -56,6 +60,7 @@ trial {
 	} ITI;
 } ITItrial;
 
+##fixation cross with audio scene -> note the scene identifier -> note multiple stimulus events >>>>>add response event to this with spacebar 
 trial{
 	trial_duration = 2500; 
 	picture {text Cross; x=0;y=0;};
@@ -72,9 +77,11 @@ trial{
 	}TargetEvent;
 } Scene;
 
+
+##response request trial
 trial{
 	trial_duration = 3000; 
-	trial_type = specific_response;
+	trial_type = specific_response; ##this is RT response for you during the above -> Solve how to get at that time after
 	terminator_button = 3,4;
 	stimulus_event{
 		picture {text RespondPicture; x=0;y=0;};
@@ -82,6 +89,7 @@ trial{
 	}ResponseEvent; 
 } Response;
 
+##feedback event -> try this following the trial above
 trial{
 	trial_duration = 500; 
 	stimulus_event{
@@ -93,18 +101,22 @@ trial{
 
 begin_pcl;
 
-preset string Participant;
-preset double SignalAttenuation;
-preset int Version; # Version 1 = Tone study/test on left, random on right and left; Version 2 = Tone study/test on right, random on right and left
+preset string Participant; ##participant number
+preset double SignalAttenuation; ##for altering tone volume if required
+preset int Version; # Version 1 = Tone study/test on left, random on right and left; Version 2 = Tone study/test on right, random on right and left ## you will not have a version
 
 
-int NumOfTrials = 5; 
+int NumOfTrials = 5; ## i think six practise for too fast too slow and checkmark
 
+##set array -> first is number of trials second is number of information pieces per stimuli
+##six pieces are 1 - name 2 - attenuation setting left 3 - attenuation setting right 4 - L or M?? 5 - tone side 6- tone type
 array<string> AllPractice[5][6] = {{"GEESE.wav","-26.64","-25.58","L","Left","High"},{"FIREWORKS.wav","-18.55","-19.88","M","Right","Low"},{"BOMBING.wav","-15.61","-15.07","M","Left","Low"},{"CrunchingChips.wav","-13.77","-14.43","M","Left","High"},{"PaperRustling.wav","-21.34","-21.34","L","Left","Low"},{"SMASHINGGUITARS.wav","-26.64","-25.58","L","Left","High"},{"CATS.wav","-18.55","-19.88","M","Right","Low"},{"WOLVES.wav","-15.61","-15.07","M","Left","Low"},{"ORCHESTRATUNING..wav","-13.77","-14.43","M","Left","High"},{"LIGHTNING.wav","-21.34","-21.34","L","Left","Low"}};
 
+##here is the random target onset assignment -> this should work for the varied
+##same idea should work for the L/R tone assignment
 array<int> TargetOnset[3] = {1300,1800,2300}; # jittered onset, 3 possibilities
 
-
+##>>>>>>>>>>>>>> here starts the countdown -> this is as you need it
 sub countdown(int Limit)
 begin
 		Limit = Limit + 1;
@@ -130,6 +142,7 @@ begin
 		CountdownPic.present(); 
 end;
 
+## >>>>>> time management piece -> here is where you alter the ITI time
 sub Wait(int TimeInSec)
 begin
 	int clockTime = clock.time();
@@ -139,24 +152,24 @@ begin
 	end; 
 end;
 
-
-sub InsertScene(int TrialNum, int Ver, string Freq) 
+## >>>>> here you insert the audio scene -> trial num I beleive is noting which trial you are on -> recall that each step is considered a trial (ITI and etc...)
+sub InsertScene(int TrialNum, int Ver, string Freq) ## the look like variable initializers
 begin	
 	
 	# Inserting the scene
-	string soundfile = "StimuliComplete(FallTime, Cut, RMSequated)_NEW\\";
-	soundfile = soundfile + AllPractice[TrialNum][1];
+	string soundfile = "StimuliComplete(FallTime, Cut, RMSequated)_NEW\\"; ##folder where wave files are stored -> soundfile must be identifier from presentation
+	soundfile = soundfile + AllPractice[TrialNum][1];  ##
 	
-	TheWave.set_filename(soundfile); 
-	TheWave.load(); 
-	TheScene = new sound(TheWave); 
+	TheWave.set_filename(soundfile); ##assign soundfile to the wave for calling
+	TheWave.load(); ##load the wave
+	TheScene = new sound(TheWave); ##assign to the scene
 	
-	TheScene.set_attenuation(0.1);
-	TheScene.set_pan(0.0); 
-	TheScene.present(); 		
+	TheScene.set_attenuation(0.1); ##note scene attenuation is here -> initial attenuation at start is for tone only
+	TheScene.set_pan(0.0); ##scene to play both sides
+	TheScene.present();  ## I believe this is play the scene holder for wavefiles	
 		
 	
-	# Setting the right response depending on high/lo
+	# Setting the right response depending on high/lo -> assign button for correct -> you will change to assign button to capture RT
 	if Freq == "High" then
 		if Ver== 1 then
 			ResponseEvent.set_target_button(4);
@@ -176,10 +189,12 @@ end;
 
 
 # the structure of InsertPureTone needs to be changed to accept a third argument (basically whether the tone is hi/lo)
+## seems like sub porder here is unimportant
+## here are the if then statements for frequency low or high but where are those randomized -> they are hard coded in the parctise files
 
 sub InsertPureTone(string freq, double attenuate, double pan, int TargetToneOnset)
 begin	
-	string soundfile = "StimuliComplete(FallTime, Cut, RMSequated)_NEW\\";
+	string soundfile = "StimuliComplete(FallTime, Cut, RMSequated)_NEW\\";	###if thens for tone hi low and target side
 	if freq == "Low" then
 		soundfile = soundfile + "500hz_amplified_mf_atten.wav";
 	elseif freq == "High" then
@@ -202,6 +217,8 @@ end;
 
 
 ################################################# TASK SHOWS UP HERE ##########################################################
+##	>>>>>> here is the running order as it were 	<<<<
+
 if Version == 1 then
 	instructionText.set_caption("Practice task: You will be hearing a set of auditory clips. Your task is to indicate, to your best judgment, whether the tone is low or high.\n\nPress the 'left' arrow key if you think the tone is low.\nPress the 'right' arrow key if you think the tone is high.\nPress the 'down' arrow key if there is NO tone \n\n Again, please respond as quickly and as accurately as possible. \n\n When you are ready to begin, please press the “down” arrow key.");
 elseif Version == 2 then
@@ -214,20 +231,21 @@ InstructionScene.present();
 
 countdown(3); 
 
-stimulus_data last; 
+stimulus_data last; ### data from last stimulus
 string FeedbackString = ""; 
-string theirResponse; 
-string output = "TrialNumber\tFileName\tTrialType\tTargetJitterPosition\tFeedback\tSubject Response\tRT\tHigh v. Low\n"; 
+string theirResponse; ##response
+string output = "TrialNumber\tFileName\tTrialType\tTargetJitterPosition\tFeedback\tSubject Response\tRT\tHigh v. Low\n"; ##data save
+##TRIAL NUMBER -> is scene present number FILENAME is scene name (geese whatever) TRIAL TYPE is left or right TARGJITTPOSITION is onset time FEEDBACK correct or incorrect message to participatns SUBJECTRESP is the keypress they made RT is response time HIGHvsLOW is target type
 
-double PureToneVol =20.0; 
+double PureToneVol =20.0; ## not sure what these are yet
 double Constant = 43.0;
 double PureToneConstant = 0.40; 
 
-loop int TrialNum = 1 until TrialNum >NumOfTrials
+loop int TrialNum = 1 until TrialNum >NumOfTrials ## looping set up
 begin
 	
-	InsertScene(TrialNum, Version, AllPractice[TrialNum][6]);
-	int IndexForTargetOnset = random(1,3);
+	InsertScene(TrialNum, Version, AllPractice[TrialNum][6]); ###number of trial and number of parameters in that file
+	int IndexForTargetOnset = random(1,3); ##random I think this is left or right? -> this may be the randomization
 	int TargetToneOnset = TargetOnset[IndexForTargetOnset]; 
 	
 	double NewPureTone = 0.0; 
@@ -235,6 +253,9 @@ begin
 	double NoiseVolume = 0.0; 
 	string File = "Nothing"; 
 	
+	
+	##>>>> if then statements for left or right - this should work for fixed and varied main split - fixed will read off yoke - varaied cna be random
+	##>>>> structure is index trial by number - index 5th value which is left/right designation
 	if AllPractice[TrialNum][5] == "Left" then
 		NoiseVolume = double(AllPractice[TrialNum][2]); # Noise volume @ the left side 
 		CurrentAtten = SignalAttenuation+ ((-23.0-NoiseVolume)/100.0); 
