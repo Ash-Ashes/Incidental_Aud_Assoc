@@ -27,12 +27,12 @@ Codable Set Up Features -> escape keys default Q or ESC, P = Pause, R = resume
         
         Common Keys
         Escape - end experiment -confirm not part of key count <<<<<< Is not part of key count
-        6 - enter/return - indicate ready to continue after instructions between exposure trials and before test - data elapsed time between end one block and start next
-        5 - TAB - repeat instruction page
+        5 - enter/return - indicate ready to continue after instructions between exposure trials and before test - data elapsed time between end one block and start next
+        7 - TAB - repeat instruction page
         
         Key Responses Exposure Phase
         6 - Space Bar - RT task - press as fast a possible when detect tone - data RT from scene onset time
-        5 - return  - data duration time between end one block and start next
+        5 - enter/return  - data duration time between end one block and start next
         
         Key Responses - Test phase old/new (implications for later EEG)
         3 - "X"  - Press as soon as you recognize the audio clip  - old
