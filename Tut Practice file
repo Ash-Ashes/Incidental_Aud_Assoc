@@ -98,9 +98,20 @@ preset double SignalAttenuation;
 preset int Version; # Version 1 = Tone study/test on left, random on right and left; Version 2 = Tone study/test on right, random on right and left
 
 
-int NumOfTrials = 5; 
+int NumOfTrials = 10; ##changed from 5 to 10 -> there are 10 clips below -> this worked - you now have 10 files playing -> in order
 
-array<string> AllPractice[5][6] = {{"GEESE.wav","-26.64","-25.58","L","Left","High"},{"FIREWORKS.wav","-18.55","-19.88","M","Right","Low"},{"BOMBING.wav","-15.61","-15.07","M","Left","Low"},{"CrunchingChips.wav","-13.77","-14.43","M","Left","High"},{"PaperRustling.wav","-21.34","-21.34","L","Left","Low"},{"SMASHINGGUITARS.wav","-26.64","-25.58","L","Left","High"},{"CATS.wav","-18.55","-19.88","M","Right","Low"},{"WOLVES.wav","-15.61","-15.07","M","Left","Low"},{"ORCHESTRATUNING..wav","-13.77","-14.43","M","Left","High"},{"LIGHTNING.wav","-21.34","-21.34","L","Left","Low"}};
+array<string> AllPractice[10][6] = {
+{"GEESE.wav","-26.64","-25.58","L","Left","High"},
+{"FIREWORKS.wav","-18.55","-19.88","M","Right","Low"},
+{"BOMBING.wav","-15.61","-15.07","M","Left","Low"},
+{"CrunchingChips.wav","-13.77","-14.43","M","Left","High"},
+{"PaperRustling.wav","-21.34","-21.34","L","Left","Low"},
+{"SMASHINGGUITARS.wav","-26.64","-25.58","L","Left","High"},
+{"CATS.wav","-18.55","-19.88","M","Right","Low"},
+{"WOLVES.wav","-15.61","-15.07","M","Left","Low"},
+{"ORCHESTRATUNING..wav","-13.77","-14.43","M","Left","High"},
+{"LIGHTNING.wav","-21.34","-21.34","L","Left","Low"}
+};
 
 array<int> TargetOnset[3] = {1300,1800,2300}; # jittered onset, 3 possibilities
 
@@ -183,7 +194,7 @@ begin
 	if freq == "Low" then
 		soundfile = soundfile + "500hz_amplified_mf_atten.wav";
 	elseif freq == "High" then
-		soundfile = soundfile + "1khz_atten_final_3.wav";
+		soundfile = soundfile + "1khz_atten_final_3.wav";## change this to the 500hz
 	end;
 	PureTone.set_filename(soundfile); 
 	PureTone.load(); 
