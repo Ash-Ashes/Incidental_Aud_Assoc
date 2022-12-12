@@ -48,7 +48,7 @@ sound {wavefile TheWave; attenuation=1.0;}TheScene; ### Here is sound object -> 
 
 trial{
 	trial_duration = forever; #allows response event
-	trial_type = first_response; #response ends trial -> move on to the next instruction event
+	trial_type = first_response; #response ends trial -> move on to the next instruction event -> doesn't have to end the trial
 	terminator_button = 1; ## you will change this
 	stimulus_event{
 		picture{
