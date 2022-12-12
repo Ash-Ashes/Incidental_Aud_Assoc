@@ -298,7 +298,9 @@ begin
 	end; 
 	
 	string tempOutput = string(TrialNum) +"\t" + File +"\t" + AllPractice[TrialNum][5] + "\t"+ string(TargetToneOnset) + "\t"+ FeedbackString + "\t" + theirResponse +"\t" + string(last.reaction_time()) +"\t" + AllPractice[TrialNum][6] + "\n"; 
-
+## log file above to output either by name of +"\t" + seems to be the separator
+##note that these are temps
+## you can see the save function using "output" named below in the TheFile.print(output)-> look up if you can save multiple files with if then statements when you are giving the end task take a break and ready bit 
 
 	term.print(tempOutput); 
 	output = output + tempOutput;
