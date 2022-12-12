@@ -70,6 +70,7 @@ trial {
 
 trial{
 	trial_duration = 2500; #>>>> here you will change the trial type to end with a response to the feedback visual -> the scene will need to go on its own from the picture event <<<<<<<
+	##>>>>>also there is no assignment to an array here  -> look for the names to appear again
 	picture {text Cross; x=0;y=0;};
 	stimulus_event{
 		sound TheScene ;
@@ -77,7 +78,7 @@ trial{
 	}SceneEvent;
 
 
-	##>>> Here the deltat is delta time -> how long after the scene the tone starts -> your randomizer needs to happen before -> there will be one for fixed and one for randomized
+	##>>> Here the deltat is delta time -> how long after the scene the tone starts -> your randomizer needs to happen before -> there will be one for fixed and one for randomized -> note this is within the above as in scene event and target event are part of the same trial so you will also add response event and feedback event
 	# Target here will need to be yoked to fixed (1) or random (2) conditions -> build fixed first then get your random stuff
 	stimulus_event{
 		sound ThePureTone;
@@ -130,7 +131,7 @@ array<string> BufferArrayR [1] [6]= {{"BLACKSMITH.wav","-21.54","-21.63","1300",
 ##>>>> also do remove the parctice sounds from these stimuli - no repeating
 
 ##>>>> the last number might be a duration -> if so you will want to change this -> check is not tone onset time -> onset time is part of the trial.
-##>>>> I think it is duration
+##>>>> I think it is duration -> the files are all 2500 long so mess with the practice and see if it is duration
 
 array<string> AllScenes[80][4] = {
 {"CONSTRUCTION.wav","-23.16","-23.52", "1900"},
@@ -218,6 +219,7 @@ array<string> AllScenes[80][4] = {
 #therefore array<string> TrialType[80] is now TrialType[80][2] to signal that there are 2 parts to each entry >>>> check this with yoking
 
 ##>>>>>>> build array, name array - this is the second part for the tone. Here you need tone onset and side -> so 40 as {"Left" and 40 as "Right" this for yoking -> but really we want to yoke "Fixed" and "Varied" for an if then statement -> if that is so then the second value is [1] for only one parameter that is attached
+##so for you this is where you can put your Fixed Right Fixed Left and Varied conditions and yes you can have arrays with differing paramters
 array<string> TrialType[80][2] = {{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Left","Low"},{"Left","High"},{"Right","Low"},{"Right","High"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"},{"Neutral","None"}};
 
 ###>>> this stays the same I think<<<<<<<
@@ -257,7 +259,7 @@ end;
 
 ###>>>> subroutines here -> looks like int order is pulled from the lists -> int ver -> is pulled from the participant on board info -> string Freq is to determine hi med low -> this is your fixed vs random -> not sure what string array type is -> AH it is whether or not the stimuli is main the primacy or the recency trials -> this is adaptable
 
-sub InsertScene(int Order, int Ver, string Freq, string ArrayType)
+sub InsertScene(int Order, int Ver, string Freq, string ArrayType) ###this is a subroutine to insert the scene -> array type as main
 begin
 
 	# Inserting the scene >>>> direct to wavefiles
@@ -308,8 +310,9 @@ end;
 # the structure of InsertPureTone needs to be changed to accept a third argument (basically whether the tone is hi/lo)
 # for me the structure of pure tone needs to reflect the fixed vs varied and the onset times
 # if yoke = varied and response time >= deltat + 500ms too slow, varied and response time <= deltat +100 ms too fast else check
+##>>>>> CHECK OUT the notes in the documentation about the difference between delataT and the other time formats - for you the time after onset of scene stimuli and then confirm tone onset time match as well
 
-###>>>>ok here are your values for the pur tones -> you only have one freq, but this is how you get your responses
+###>>>>ok here are your values for the pure tones -> you only have one freq, but this is how you get your responses
 sub InsertPureTone(string freq, double attenuate, double pan, int TargetToneOnset)
 begin
 	string soundfile = "StimuliComplete(FallTime, Cut, RMSequated)_NEW\\";
@@ -344,7 +347,7 @@ end;
 instructionText.redraw();
 InstructionScene.present();
 
-countdown(3);
+countdown(3);##can this be change by changing the (3)?
 
 stimulus_data last;
 string FeedbackString = "";
@@ -367,8 +370,11 @@ input_file stim_order = new input_file;
 
 stim_order.open("Participants\\"+Participant+"\\neworder_list1.txt");
 
+
+##looks like the loops adjust the scene volume on the side the tone is going to play? I don't know that i need this
+##I think the tone maybe varies in attenuation?
 #primacy loop
-loop int TrialPrim = 1 until TrialPrim > 1
+loop int TrialPrim = 1 until TrialPrim > 1 ##run a single time
 begin
 
 	int TargetToneOnset = int(BufferArrayP[TrialPrim][4]);
@@ -412,6 +418,8 @@ begin
 	end;
 	Scene.present();
 	Response.present();
+
+	##>>>>>>>>> here is where  you set up your data feedback and then save data as temp before save as full? save
 
 	last = stimulus_manager.last_stimulus_data();
 	if last.type() == stimulus_incorrect then
@@ -592,6 +600,7 @@ begin
 
 end;
 
+##saving your data -> where do we set learning task One -> also for you you will save data after each trial so it will be in the loop?
 string OutfileName = Participant + "_LearningTask1.txt";
 output_file TheFile = new output_file;
 TheFile.open(OutfileName,true);
