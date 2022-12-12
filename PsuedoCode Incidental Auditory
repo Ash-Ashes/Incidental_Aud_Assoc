@@ -22,27 +22,27 @@ General Note -> scenes in presentation
 might use these for the main sections -> instrucitons | Practise + Exposure blocks | Recognition Test
 
 
-Codable Set Up Features
+Codable Set Up Features -> escape keys default Q or ESC, P = Pause, R = resume
         Key responses (max 6 allowable - 4 used) - request dominant hand use for later EEG transiiton
         
         Common Keys
-        Escape - end experiment -confirm not part of key count <<<<<<
-        return - indicate ready to continue after instructions between exposure trials and before test - data elapsed time between end one block and start next
-        shift - repeat instruction page
+        Escape - end experiment -confirm not part of key count <<<<<< Is not part of key count
+        6 - enter/return - indicate ready to continue after instructions between exposure trials and before test - data elapsed time between end one block and start next
+        5 - TAB - repeat instruction page
         
         Key Responses Exposure Phase
-        Space Bar - RT task - press as fast a possible when detect tone - data RT from scene onset time
-        return - data duration time between end one block and start next
+        6 - Space Bar - RT task - press as fast a possible when detect tone - data RT from scene onset time
+        5 - return  - data duration time between end one block and start next
         
         Key Responses - Test phase old/new (implications for later EEG)
-        "<"  - Press as soon as you recognize the audio clip 
-        ">"  - Press as soon as you know you do not recognize
+        3 - "X"  - Press as soon as you recognize the audio clip  - old
+        4 - "N"  - Press as soon as you know you do not recognize - new
         
         Confidence Questions - radio buttons - likert - 4 or 6 points to prevent fence sitting <<<<<confirm presentation does this
         
         Key Responses - Test phase - Tone lateralization
-        "<" - Left side 
-        ">" - Right side
+        1 "< (,)" - Left side 
+        2 "> (.)" - Right side
         
 >>>>>>    Instruction Consent & Practice Segment            <<<<<<
 
